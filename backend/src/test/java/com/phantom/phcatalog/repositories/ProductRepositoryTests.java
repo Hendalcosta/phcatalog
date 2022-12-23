@@ -3,23 +3,48 @@ package com.phantom.phcatalog.repositories;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.phantom.phcatalog.entities.Product;
+import com.phantom.phcatalog.tests.Factory;
 
 @DataJpaTest
 public class ProductRepositoryTests {
 
 	@Autowired
 	private ProductRepository repository;
-
+	
+	private long targetId;
+	private long noExistingTargetId;
+	private long countTotalProducts;
+	
+	@BeforeEach
+	void setup() throws Exception{
+		targetId = 1L;
+		noExistingTargetId = 1000L;
+		countTotalProducts = 25L;
+	}
+	
+	
+	@Test
+	public void saveShouldPersistWithAutoIncrementWhenIdIsNull() {
+		
+		Product product = Factory.createProduct();
+		product.setId(null);
+		
+		product = repository.save(product);
+		
+		Assertions.assertNotNull(product.getId());
+		Assertions.assertEquals(countTotalProducts +1, product.getId());
+	}
+	
+	
 	@Test
 	public void deleteShouldEraseObjectWhenIdExists() {
-
-		long targetId = 1L;
 
 		repository.deleteById(targetId);
 
@@ -30,10 +55,9 @@ public class ProductRepositoryTests {
 
 	@Test
 	public void deleteShouldThrowEmptyResultDataAccessExceptionWhenIdNotExists() {
-		long targetId = 1000L;
 		
 		Assertions.assertThrows(EmptyResultDataAccessException.class, () ->{
-			repository.deleteById(targetId);
+			repository.deleteById(noExistingTargetId);
 		});
 	}
 

@@ -1,12 +1,16 @@
 package com.phantom.phcatalog.services;
 
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -30,8 +34,8 @@ public class ProductServiceTests {
 		targetId = 1L;
 		nonExistingTargetId = 1000L;
 		
-		Mockito.doNothing().when(repository).deleteById(targetId);
-		Mockito.doThrow(EmptyResultDataAccessException.class).when(repository).deleteById(nonExistingTargetId);
+		doNothing().when(repository).deleteById(targetId);
+		doThrow(EmptyResultDataAccessException.class).when(repository).deleteById(nonExistingTargetId);
 	}
 	
 	
@@ -43,7 +47,7 @@ public class ProductServiceTests {
 			service.delete(targetId);
 		});
 		
-		Mockito.verify(repository, Mockito.times(1)).deleteById(targetId);
+		verify(repository, times(1)).deleteById(targetId);
 		
 	}
 

@@ -5,7 +5,9 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -60,8 +62,51 @@ public class ProductResourceTests {
 		when(service.findById(targetId)).thenReturn(productDTO);
 		when(service.findById(nonExistingTargetId)).thenThrow(ResourceNotFoundException.class);
 		
+		when(service.insert(any())).thenReturn(productDTO);
+		
 		when(service.update(eq(targetId), any())).thenReturn(productDTO);
 		when(service.update(eq(nonExistingTargetId), any())).thenThrow(ResourceNotFoundException.class);
+		
+		doNothing().when(service).delete(targetId);
+		doThrow(ResourceNotFoundException.class).when(service).delete(nonExistingTargetId);
+		doThrow(DatabaseException.class).when(service).delete(dependentId);
+	}
+
+	@Test
+	public void deleteShouldReturnNoContentWhenIdIsValid() throws Exception {
+		
+		ResultActions result = mockMvc.perform(delete("/products/{id}", targetId)
+				.accept(MediaType.APPLICATION_JSON));	
+		
+		result.andExpect(status().isNoContent());
+	}
+	
+	@Test
+	public void deleteShouldReturnNotFoundWhenIdIsNotValid() throws Exception {
+		
+		ResultActions result = mockMvc.perform(get("/products/{id}", nonExistingTargetId)
+				.accept(MediaType.APPLICATION_JSON));	
+		
+		result.andExpect(status().isNotFound());
+	}
+	
+	
+	
+	@Test
+	public void insertShouldReturnCreatedProductDTO() throws Exception{
+		
+		String jsonBody = objectMapper.writeValueAsString(productDTO);
+		
+		ResultActions result = mockMvc.perform(post("/products")
+				.content(jsonBody)
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON));	
+		
+		result.andExpect(status().isCreated());
+		result.andExpect(jsonPath("$.id").exists());
+		result.andExpect(jsonPath("$.name").exists());
+		result.andExpect(jsonPath("$.description").exists());
+		
 	}
 	
 	@Test
@@ -127,3 +172,4 @@ public class ProductResourceTests {
 	}
 
 }
+

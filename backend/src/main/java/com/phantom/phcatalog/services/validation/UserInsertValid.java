@@ -1,4 +1,4 @@
-package com.phantom.phcatalog.services;
+package com.phantom.phcatalog.services.validation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

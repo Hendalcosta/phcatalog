@@ -1,4 +1,4 @@
-package com.phantom.phcatalog.services;
+package com.phantom.phcatalog.services.validation;
 
 import java.util.ArrayList;
 import java.util.List;

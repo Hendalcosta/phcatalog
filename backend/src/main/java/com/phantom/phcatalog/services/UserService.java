@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.phantom.phcatalog.dto.RoleDTO;
 import com.phantom.phcatalog.dto.UserDTO;
 import com.phantom.phcatalog.dto.UserInsertDTO;
+import com.phantom.phcatalog.dto.UserUpdateDTO;
 import com.phantom.phcatalog.entities.Role;
 import com.phantom.phcatalog.entities.User;
 import com.phantom.phcatalog.repositories.RoleRepository;
@@ -58,12 +59,12 @@ public class UserService {
 	}
 	
 	@Transactional
-	public UserDTO update(Long id, UserDTO dto) {
+	public UserDTO update(Long id, UserUpdateDTO dto) {
 		try {
-		User entity = repository.getOne(id); //em versões mais novas do JPA, o método getOne() foi substituído por getReferenceById()
-		copyDtoToEntity(dto, entity);
-		entity = repository.save(entity);
-		return new UserDTO(entity);
+			User entity = repository.getOne(id); //em versões mais novas do JPA, o método getOne() foi substituído por getReferenceById()
+			copyDtoToEntity(dto, entity);
+			entity = repository.save(entity);
+			return new UserDTO(entity);
 		}
 		catch (EntityNotFoundException e ) {
 			throw new ResourceNotFoundException("ID não encontrado: " + id);
